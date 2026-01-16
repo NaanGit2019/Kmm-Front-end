@@ -60,6 +60,35 @@ export interface MapProfileUser extends CommonFields {
   profile?: Profile;
 }
 
+// User and Auth types
+export type UserRole = 'manager' | 'employee';
+
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+  role: UserRole;
+  profileId?: number;
+  profile?: Profile;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+// Employee type for manager view
+export interface Employee extends User {
+  department?: string;
+  skillMaps?: MapSkillmap[];
+  averageSkillLevel?: number;
+}
+
 // API Response types
 export interface ApiResponse<T> {
   data: T;
