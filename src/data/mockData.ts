@@ -1,4 +1,4 @@
-import type { Grade, Profile, Technology, Skill, Subskill, MapTechnologySkill, MapSkillmap, Employee, MapTechnologyProfile, MapProfileUser } from '@/types';
+import type { Grade, Profile, Technology, Skill, Subskill, MapTechnologySkill, MapSkillmap } from '@/types';
 
 // Mock data for development - will be replaced with API calls
 export const mockGrades: Grade[] = [
@@ -65,103 +65,11 @@ export const mockTechnologySkills: MapTechnologySkill[] = [
   { id: 6, technologyId: 5, skillId: 4, isactive: true },
 ];
 
-export const mockTechnologyProfiles: MapTechnologyProfile[] = [
-  { id: 1, technologyId: 1, profileId: 1, isactive: true },
-  { id: 2, technologyId: 2, profileId: 1, isactive: true },
-  { id: 3, technologyId: 3, profileId: 2, isactive: true },
-  { id: 4, technologyId: 4, profileId: 2, isactive: true },
-  { id: 5, technologyId: 1, profileId: 3, isactive: true },
-  { id: 6, technologyId: 3, profileId: 3, isactive: true },
-  { id: 7, technologyId: 5, profileId: 3, isactive: true },
-  { id: 8, technologyId: 7, profileId: 4, isactive: true },
-  { id: 9, technologyId: 8, profileId: 4, isactive: true },
-];
-
-export const mockProfileUsers: MapProfileUser[] = [
-  { id: 1, userId: 2, profileId: 1, isactive: true },
-  { id: 2, userId: 3, profileId: 2, isactive: true },
-  { id: 3, userId: 4, profileId: 3, isactive: true },
-  { id: 4, userId: 5, profileId: 1, isactive: true },
-  { id: 5, userId: 6, profileId: 4, isactive: true },
-];
-
 export const mockSkillMaps: MapSkillmap[] = [
-  // Employee 2 (Jane Employee - Frontend Developer)
-  { id: 1, subskillId: 1, userId: 2, gradeid: 3, isactive: true },
-  { id: 2, subskillId: 2, userId: 2, gradeid: 2, isactive: true },
-  { id: 3, subskillId: 3, userId: 2, gradeid: 3, isactive: true },
-  { id: 4, subskillId: 4, userId: 2, gradeid: 2, isactive: true },
-  { id: 5, subskillId: 5, userId: 2, gradeid: 3, isactive: true },
-  { id: 6, subskillId: 7, userId: 2, gradeid: 4, isactive: true },
-  // Employee 3 (Backend Developer)
-  { id: 7, subskillId: 7, userId: 3, gradeid: 4, isactive: true },
-  { id: 8, subskillId: 8, userId: 3, gradeid: 3, isactive: true },
-  { id: 9, subskillId: 9, userId: 3, gradeid: 4, isactive: true },
-  { id: 10, subskillId: 10, userId: 3, gradeid: 3, isactive: true },
-  // Employee 4 (Full Stack)
-  { id: 11, subskillId: 1, userId: 4, gradeid: 4, isactive: true },
-  { id: 12, subskillId: 7, userId: 4, gradeid: 3, isactive: true },
-  { id: 13, subskillId: 9, userId: 4, gradeid: 2, isactive: true },
-  // Employee 5 (Frontend Developer)
-  { id: 14, subskillId: 1, userId: 5, gradeid: 2, isactive: true },
-  { id: 15, subskillId: 2, userId: 5, gradeid: 1, isactive: true },
-  // Employee 6 (DevOps)
-  { id: 16, subskillId: 13, userId: 6, gradeid: 4, isactive: true },
-  { id: 17, subskillId: 14, userId: 6, gradeid: 3, isactive: true },
-];
-
-// Mock employees for manager view
-export const mockEmployees: Employee[] = [
-  { 
-    id: 2, 
-    email: 'jane@company.com', 
-    name: 'Jane Employee', 
-    role: 'employee', 
-    profileId: 1,
-    department: 'Engineering',
-    profile: mockProfiles[0],
-    averageSkillLevel: 2.8,
-  },
-  { 
-    id: 3, 
-    email: 'bob@company.com', 
-    name: 'Bob Smith', 
-    role: 'employee', 
-    profileId: 2,
-    department: 'Engineering',
-    profile: mockProfiles[1],
-    averageSkillLevel: 3.5,
-  },
-  { 
-    id: 4, 
-    email: 'alice@company.com', 
-    name: 'Alice Johnson', 
-    role: 'employee', 
-    profileId: 3,
-    department: 'Engineering',
-    profile: mockProfiles[2],
-    averageSkillLevel: 3.0,
-  },
-  { 
-    id: 5, 
-    email: 'charlie@company.com', 
-    name: 'Charlie Brown', 
-    role: 'employee', 
-    profileId: 1,
-    department: 'Engineering',
-    profile: mockProfiles[0],
-    averageSkillLevel: 1.5,
-  },
-  { 
-    id: 6, 
-    email: 'david@company.com', 
-    name: 'David Wilson', 
-    role: 'employee', 
-    profileId: 4,
-    department: 'Operations',
-    profile: mockProfiles[3],
-    averageSkillLevel: 3.5,
-  },
+  { id: 1, subskillId: 1, userId: 1, gradeid: 3, isactive: true },
+  { id: 2, subskillId: 2, userId: 1, gradeid: 2, isactive: true },
+  { id: 3, subskillId: 4, userId: 1, gradeid: 3, isactive: true },
+  { id: 4, subskillId: 7, userId: 1, gradeid: 4, isactive: true },
 ];
 
 // Dashboard stats
@@ -170,44 +78,4 @@ export const dashboardStats = {
   totalSkills: mockSkills.filter(s => s.isactive).length,
   totalProfiles: mockProfiles.filter(p => p.isactive).length,
   totalGrades: mockGrades.filter(g => g.isactive).length,
-  totalEmployees: mockEmployees.length,
 };
-
-// Helper function to get employee skill maps
-export function getEmployeeSkillMaps(userId: number): MapSkillmap[] {
-  return mockSkillMaps.filter(sm => sm.userId === userId);
-}
-
-// Helper to calculate average grade for an employee
-export function calculateAverageGrade(userId: number): number {
-  const maps = getEmployeeSkillMaps(userId);
-  if (maps.length === 0) return 0;
-  const total = maps.reduce((sum, m) => sum + (m.gradeid || 0), 0);
-  return Math.round((total / maps.length) * 10) / 10;
-}
-
-// Helper to get skill averages for an employee
-export function getSkillAverages(userId: number): { skillId: number; skillTitle: string; average: number }[] {
-  const maps = getEmployeeSkillMaps(userId);
-  const skillGroups: Record<number, { total: number; count: number; title: string }> = {};
-  
-  maps.forEach(map => {
-    const subskill = mockSubskills.find(s => s.id === map.subskillId);
-    if (subskill) {
-      const skill = mockSkills.find(s => s.id === subskill.skillId);
-      if (skill) {
-        if (!skillGroups[skill.id]) {
-          skillGroups[skill.id] = { total: 0, count: 0, title: skill.title || '' };
-        }
-        skillGroups[skill.id].total += map.gradeid || 0;
-        skillGroups[skill.id].count += 1;
-      }
-    }
-  });
-
-  return Object.entries(skillGroups).map(([skillId, data]) => ({
-    skillId: parseInt(skillId),
-    skillTitle: data.title,
-    average: Math.round((data.total / data.count) * 10) / 10,
-  }));
-}
