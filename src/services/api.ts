@@ -36,9 +36,22 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+// API Response wrapper type
+interface ApiResponse<T> {
+  status: boolean;
+  message: string;
+  data: T;
+}
+
+// Response interceptor for unwrapping data and error handling
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Unwrap the data from { status, message, data } format
+    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
+      response.data = response.data.data;
+    }
+    return response;
+  },
   (error) => {
     const message = error.response?.data?.message || error.message || 'An error occurred';
     console.error('API Error:', message);
