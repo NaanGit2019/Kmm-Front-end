@@ -1,20 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Header } from '@/components/layout/Header';
-import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { 
-  useGrades, 
-  useSkills, 
-  useSubskills, 
-  useProfiles,
-  useUsers,
-  useSkillMaps,
-  useProfileUsers,
-  useTechnologyProfiles,
-  useTechnologySkills,
-  useTechnologies,
-  useSkillMapMutation
-} from '@/hooks/useApi';
 import { 
   EmployeeSelector, 
   EmployeeInfoCard, 
@@ -22,29 +8,37 @@ import {
   StatsCards, 
   TechnologyTabs 
 } from '@/components/employee-grades';
+import {
+  mockUsers,
+  mockProfiles,
+  mockTechnologies,
+  mockGrades,
+  mockSkills,
+  mockSubskills,
+  mockProfileUsers,
+  mockTechnologyProfiles,
+  mockTechnologySkills,
+  mockSkillMaps,
+} from '@/data/mockEmployeeGrades';
 import type { MapSkillmap } from '@/types';
 
 export default function EmployeeGrades() {
-  // Fetch all data
-  const { data: grades = [], isLoading: gradesLoading } = useGrades();
-  const { data: skills = [], isLoading: skillsLoading } = useSkills();
-  const { data: subskills = [], isLoading: subskillsLoading } = useSubskills();
-  const { data: profiles = [], isLoading: profilesLoading } = useProfiles();
-  const { data: users = [], isLoading: usersLoading } = useUsers();
-  const { data: skillMaps = [], isLoading: skillMapsLoading } = useSkillMaps();
-  const { data: profileUsers = [], isLoading: profileUsersLoading } = useProfileUsers();
-  const { data: technologyProfiles = [], isLoading: techProfilesLoading } = useTechnologyProfiles();
-  const { data: technologySkills = [], isLoading: techSkillsLoading } = useTechnologySkills();
-  const { data: technologies = [], isLoading: techLoading } = useTechnologies();
-  const { insertUpdate } = useSkillMapMutation();
-
-  const isLoading = gradesLoading || skillsLoading || subskillsLoading || profilesLoading || 
-                    usersLoading || skillMapsLoading || profileUsersLoading || 
-                    techProfilesLoading || techSkillsLoading || techLoading;
-
+  // Use mock data instead of API
+  const grades = mockGrades;
+  const skills = mockSkills;
+  const subskills = mockSubskills;
+  const profiles = mockProfiles;
+  const users = mockUsers;
+  const profileUsers = mockProfileUsers;
+  const technologyProfiles = mockTechnologyProfiles;
+  const technologySkills = mockTechnologySkills;
+  const technologies = mockTechnologies;
+  
+  const [skillMaps, setSkillMaps] = useState<MapSkillmap[]>(mockSkillMaps);
   const [selectedUserId, setSelectedUserId] = useState<number>(0);
   const [pendingChanges, setPendingChanges] = useState<Map<number, number>>(new Map());
   const [hasChanges, setHasChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Get user's profile
   const userProfile = useMemo(() => 
@@ -106,37 +100,36 @@ export default function EmployeeGrades() {
   };
 
   const handleSave = async () => {
-    const promises: Promise<void>[] = [];
+    setIsSaving(true);
     
-    pendingChanges.forEach((gradeId, subskillId) => {
-      const existingMapping = userSkillMaps.find(sm => sm.subskillId === subskillId);
+    // Simulate API save with mock data update
+    setTimeout(() => {
+      const newSkillMaps = [...skillMaps];
       
-      const data: MapSkillmap = {
-        id: existingMapping?.id || 0,
-        subskillId,
-        userId: selectedUserId,
-        gradeid: gradeId,
-        isactive: true
-      };
-      
-      promises.push(
-        new Promise((resolve, reject) => {
-          insertUpdate.mutate(data, {
-            onSuccess: () => resolve(),
-            onError: (error) => reject(error)
+      pendingChanges.forEach((gradeId, subskillId) => {
+        const existingIndex = newSkillMaps.findIndex(
+          sm => sm.userId === selectedUserId && sm.subskillId === subskillId
+        );
+        
+        if (existingIndex >= 0) {
+          newSkillMaps[existingIndex] = { ...newSkillMaps[existingIndex], gradeid: gradeId };
+        } else {
+          newSkillMaps.push({
+            id: Date.now() + subskillId,
+            userId: selectedUserId,
+            subskillId,
+            gradeid: gradeId,
+            isactive: true
           });
-        })
-      );
-    });
-
-    try {
-      await Promise.all(promises);
-      toast.success('Employee grades saved successfully!');
+        }
+      });
+      
+      setSkillMaps(newSkillMaps);
+      setIsSaving(false);
       setHasChanges(false);
       setPendingChanges(new Map());
-    } catch (error) {
-      toast.error('Failed to save some grades');
-    }
+      toast.success('Employee grades saved successfully!');
+    }, 500);
   };
 
   const calculateAverageGrade = () => {
@@ -150,20 +143,6 @@ export default function EmployeeGrades() {
 
   const selectedUser = users.find(u => u.id === selectedUserId);
   const skillsGradedCount = userSkillMaps.length + pendingChanges.size;
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6 p-6">
-        <Header title="Employee Grades" subtitle="Apply and manage competency grades for individual employees" />
-        <div className="grid gap-4 md:grid-cols-3">
-          <Skeleton className="h-32" />
-          <Skeleton className="h-32" />
-          <Skeleton className="h-32" />
-        </div>
-        <Skeleton className="h-64" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -181,11 +160,9 @@ export default function EmployeeGrades() {
         />
 
         {selectedUser && (
-          <>
-            <div className="md:col-span-2">
-              <GradeLegend grades={grades} />
-            </div>
-          </>
+          <div className="md:col-span-2">
+            <GradeLegend grades={grades} />
+          </div>
         )}
       </div>
 
@@ -196,7 +173,7 @@ export default function EmployeeGrades() {
             user={selectedUser}
             profile={profile}
             hasChanges={hasChanges}
-            isSaving={insertUpdate.isPending}
+            isSaving={isSaving}
             onSave={handleSave}
           />
 
