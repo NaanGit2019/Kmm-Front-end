@@ -48,7 +48,7 @@ export default function Login() {
     setTimeout(() => {
       setIsLoading(false);
       toast.success(`Welcome back, ${username}!`);
-      navigate('/');
+      navigate('/dashboard');
     }, 800);
   };
 
