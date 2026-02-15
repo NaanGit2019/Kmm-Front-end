@@ -136,4 +136,22 @@
       transform: translateY(0);
     }
   }
+
+  @keyframes petalFall {
+    0% {
+      opacity: 0;
+      transform: translateY(0) rotate(0deg) translateX(0);
+    }
+    10% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(100vh) rotate(360deg) translateX(80px);
+    }
+  }
+
+  .animate-petal-fall {
+    animation: petalFall 8s ease-in infinite;
+  }
 }
