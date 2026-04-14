@@ -141,9 +141,9 @@ export default function Technologies() {
       
       <div className="p-6">
         {isLoading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-64 w-full" />
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            <p className="text-sm text-muted-foreground">Loading technologies...</p>
           </div>
         ) : (
           <DataTable
