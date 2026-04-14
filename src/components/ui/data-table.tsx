@@ -17,6 +17,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { PaginationControls } from '@/components/ui/pagination-controls';
+import { usePagination } from '@/hooks/usePagination';
 
 export interface Column<T> {
   key: keyof T | string;
@@ -57,6 +59,16 @@ export function DataTable<T extends { id: number }>({
       })
     : data;
 
+  const {
+    paginatedData,
+    currentPage,
+    pageSize,
+    totalPages,
+    totalItems,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePagination(filteredData);
+
   return (
     <div className="bg-card rounded-xl border border-border animate-fade-in">
       {/* Header */}
@@ -84,6 +96,16 @@ export function DataTable<T extends { id: number }>({
         </div>
       </div>
 
+      {/* Top Pagination */}
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        totalItems={totalItems}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+      />
+
       {/* Table */}
       <div className="overflow-x-auto">
         <Table>
@@ -100,7 +122,7 @@ export function DataTable<T extends { id: number }>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredData.length === 0 ? (
+            {paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length + (onEdit || onDelete ? 1 : 0)}
@@ -110,7 +132,7 @@ export function DataTable<T extends { id: number }>({
                 </TableCell>
               </TableRow>
             ) : (
-              filteredData.map((item) => (
+              paginatedData.map((item) => (
                 <TableRow key={item.id} className="group">
                   {columns.map((column) => (
                     <TableCell key={String(column.key)}>
@@ -158,11 +180,16 @@ export function DataTable<T extends { id: number }>({
         </Table>
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between p-4 border-t border-border">
-        <p className="text-sm text-muted-foreground">
-          Showing {filteredData.length} of {data.length} entries
-        </p>
+      {/* Bottom Pagination */}
+      <div className="border-t border-border">
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
       </div>
     </div>
   );
