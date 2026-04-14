@@ -20,8 +20,8 @@ export function EmployeeInfoCard({ user, profile, hasChanges, isSaving, onSave }
   };
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="sticky top-0 z-20 shadow-md border-border/80 backdrop-blur-sm bg-card/95">
+      <CardHeader className="py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">

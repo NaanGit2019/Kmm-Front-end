@@ -158,15 +158,9 @@ export default function Analytics() {
     return (
       <div className="space-y-6 p-6">
         <Header title="Skills Analytics" subtitle="Comprehensive analysis of employee skills and competency levels" />
-        <div className="grid gap-4 md:grid-cols-4">
-          <Skeleton className="h-32" />
-          <Skeleton className="h-32" />
-          <Skeleton className="h-32" />
-          <Skeleton className="h-32" />
-        </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Skeleton className="h-80" />
-          <Skeleton className="h-80" />
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-sm text-muted-foreground">Loading analytics...</p>
         </div>
       </div>
     );

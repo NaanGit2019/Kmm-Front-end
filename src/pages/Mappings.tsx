@@ -8,8 +8,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { PaginatedTable } from '@/components/ui/paginated-table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, Trash2, Link2, Users, Cpu, Layers } from 'lucide-react';
+import { PaginationControls } from '@/components/ui/pagination-controls';
+import { usePagination } from '@/hooks/usePagination';
 import { 
   useProfiles, 
   useTechnologies, 
@@ -137,8 +140,10 @@ export default function Mappings() {
     return (
       <div className="space-y-6 p-6">
         <Header title="Mappings" subtitle="Manage relationships between technologies, skills, profiles, and users" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-96 w-full" />
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-sm text-muted-foreground">Loading mappings...</p>
+        </div>
       </div>
     );
   }
@@ -188,52 +193,23 @@ export default function Mappings() {
               </Button>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Technology</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Profile</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="w-[50px]"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {techProfiles.map((tp) => {
-                    const tech = getTechnology(tp.technologyId);
-                    const profile = getProfile(tp.profileId);
-                    return (
-                      <TableRow key={tp.id}>
-                        <TableCell className="font-medium">{tech?.title}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{tech?.type}</Badge>
-                        </TableCell>
-                        <TableCell>{profile?.title}</TableCell>
-                        <TableCell>
-                          <Badge variant={tp.isactive ? "default" : "secondary"}>
-                            {tp.isactive ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => handleDeleteTechProfile(tp.id)}
-                            disabled={deleteTechProfile.isPending}
-                          >
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              <PaginatedTable
+                data={techProfiles}
+                columns={[
+                  { header: 'Technology', render: (tp) => <span className="font-medium">{getTechnology(tp.technologyId)?.title}</span> },
+                  { header: 'Type', render: (tp) => <Badge variant="outline">{getTechnology(tp.technologyId)?.type}</Badge> },
+                  { header: 'Profile', render: (tp) => <span>{getProfile(tp.profileId)?.title}</span> },
+                  { header: 'Status', render: (tp) => <Badge variant={tp.isactive ? "default" : "secondary"}>{tp.isactive ? 'Active' : 'Inactive'}</Badge> },
+                  { header: '', width: 'w-[50px]', render: (tp) => (
+                    <Button variant="ghost" size="icon" onClick={() => handleDeleteTechProfile(tp.id)} disabled={deleteTechProfile.isPending}>
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  )},
+                ]}
+              />
             </CardContent>
           </Card>
         </TabsContent>
-
-        {/* Technology-Skill Tab */}
         <TabsContent value="tech-skill">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -252,47 +228,20 @@ export default function Mappings() {
               </Button>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Technology</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Skill</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="w-[50px]"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {techSkills.map((ts) => {
-                    const tech = getTechnology(ts.technologyId);
-                    const skill = getSkill(ts.skillId);
-                    return (
-                      <TableRow key={ts.id}>
-                        <TableCell className="font-medium">{tech?.title}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{tech?.type}</Badge>
-                        </TableCell>
-                        <TableCell>{skill?.title}</TableCell>
-                        <TableCell>
-                          <Badge variant={ts.isactive ? "default" : "secondary"}>
-                            {ts.isactive ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => handleDeleteTechSkill(ts.id)}
-                            disabled={deleteTechSkill.isPending}
-                          >
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              <PaginatedTable
+                data={techSkills}
+                columns={[
+                  { header: 'Technology', render: (ts) => <span className="font-medium">{getTechnology(ts.technologyId)?.title}</span> },
+                  { header: 'Type', render: (ts) => <Badge variant="outline">{getTechnology(ts.technologyId)?.type}</Badge> },
+                  { header: 'Skill', render: (ts) => <span>{getSkill(ts.skillId)?.title}</span> },
+                  { header: 'Status', render: (ts) => <Badge variant={ts.isactive ? "default" : "secondary"}>{ts.isactive ? 'Active' : 'Inactive'}</Badge> },
+                  { header: '', width: 'w-[50px]', render: (ts) => (
+                    <Button variant="ghost" size="icon" onClick={() => handleDeleteTechSkill(ts.id)} disabled={deleteTechSkill.isPending}>
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  )},
+                ]}
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -316,49 +265,21 @@ export default function Mappings() {
               </Button>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Employee</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Department</TableHead>
-                    <TableHead>Profile</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="w-[50px]"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {profileUsers.map((pu) => {
-                    const user = getUser(pu.userId);
-                    const profile = getProfile(pu.profileId);
-                    return (
-                      <TableRow key={pu.id}>
-                        <TableCell className="font-medium">{user?.name}</TableCell>
-                        <TableCell className="text-muted-foreground">{user?.email}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{user?.department}</Badge>
-                        </TableCell>
-                        <TableCell>{profile?.title}</TableCell>
-                        <TableCell>
-                          <Badge variant={pu.isactive ? "default" : "secondary"}>
-                            {pu.isactive ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => handleDeleteProfileUser(pu.id)}
-                            disabled={deleteProfileUser.isPending}
-                          >
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              <PaginatedTable
+                data={profileUsers}
+                columns={[
+                  { header: 'Employee', render: (pu) => <span className="font-medium">{getUser(pu.userId)?.name}</span> },
+                  { header: 'Email', render: (pu) => <span className="text-muted-foreground">{getUser(pu.userId)?.email}</span> },
+                  { header: 'Department', render: (pu) => <Badge variant="outline">{getUser(pu.userId)?.department}</Badge> },
+                  { header: 'Profile', render: (pu) => <span>{getProfile(pu.profileId)?.title}</span> },
+                  { header: 'Status', render: (pu) => <Badge variant={pu.isactive ? "default" : "secondary"}>{pu.isactive ? 'Active' : 'Inactive'}</Badge> },
+                  { header: '', width: 'w-[50px]', render: (pu) => (
+                    <Button variant="ghost" size="icon" onClick={() => handleDeleteProfileUser(pu.id)} disabled={deleteProfileUser.isPending}>
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  )},
+                ]}
+              />
             </CardContent>
           </Card>
         </TabsContent>

@@ -18,6 +18,9 @@ import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronRight, Layers } from 'lucide-react';
 import { toast } from 'sonner';
+import { PageLoader } from '@/components/ui/page-loader';
+import { PaginationControls } from '@/components/ui/pagination-controls';
+import { usePagination } from '@/hooks/usePagination';
 import {
   Collapsible,
   CollapsibleContent,
@@ -121,10 +124,7 @@ export default function Skills() {
       
       <div className="p-6">
         {isLoading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-64 w-full" />
-          </div>
+          <PageLoader message="Loading skills..." />
         ) : (
           <div className="bg-card rounded-xl border border-border animate-fade-in">
             {/* Header */}
