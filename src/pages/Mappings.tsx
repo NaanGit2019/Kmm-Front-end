@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, Trash2, Link2, Users, Cpu, Layers } from 'lucide-react';
+import { PaginationControls } from '@/components/ui/pagination-controls';
+import { usePagination } from '@/hooks/usePagination';
 import { 
   useProfiles, 
   useTechnologies, 
