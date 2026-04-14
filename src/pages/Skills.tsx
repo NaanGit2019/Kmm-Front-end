@@ -126,8 +126,6 @@ export default function Skills() {
         {isLoading ? (
           <PageLoader message="Loading skills..." />
         ) : (
-          <SkillsList skills={skills} expandedSkills={expandedSkills} toggleExpanded={toggleExpanded} getSubskillsForSkill={getSubskillsForSkill} handleAdd={handleAdd} handleEdit={handleEdit} handleDelete={handleDelete} />
-        )}
           <div className="bg-card rounded-xl border border-border animate-fade-in">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 gap-4 border-b border-border">
