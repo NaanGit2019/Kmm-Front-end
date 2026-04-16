@@ -28,6 +28,130 @@ import {
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 
+function SkillsListWithPagination({ 
+  skills, expandedSkills, toggleExpanded, getSubskillsForSkill, onAdd, onEdit, onDelete 
+}: { 
+  skills: Skill[]; 
+  expandedSkills: number[]; 
+  toggleExpanded: (id: number) => void;
+  getSubskillsForSkill: (id: number) => any[];
+  onAdd: () => void;
+  onEdit: (s: Skill) => void;
+  onDelete: (s: Skill) => void;
+}) {
+  const {
+    paginatedData,
+    currentPage,
+    pageSize,
+    totalPages,
+    totalItems,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePagination(skills);
+
+  return (
+    <div className="bg-card rounded-xl border border-border animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 gap-4 border-b border-border">
+        <h3 className="text-lg font-semibold text-foreground">Skills & Sub-skills</h3>
+        <Button onClick={onAdd}>Add Skill</Button>
+      </div>
+
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        totalItems={totalItems}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+      />
+
+      <div className="divide-y divide-border">
+        {paginatedData.map((skill) => {
+          const skillSubskills = getSubskillsForSkill(skill.id);
+          const isExpanded = expandedSkills.includes(skill.id);
+
+          return (
+            <Collapsible 
+              key={skill.id}
+              open={isExpanded}
+              onOpenChange={() => toggleExpanded(skill.id)}
+            >
+              <div className="p-4 hover:bg-secondary/30 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <ChevronRight className={cn(
+                          "h-4 w-4 transition-transform",
+                          isExpanded && "rotate-90"
+                        )} />
+                      </Button>
+                    </CollapsibleTrigger>
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Layers className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">{skill.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {skillSubskills.length} sub-skills
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <StatusBadge active={skill.isactive} />
+                    <Button variant="outline" size="sm" onClick={() => onEdit(skill)}>
+                      Edit
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => onDelete(skill)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              <CollapsibleContent>
+                <div className="pl-16 pr-4 pb-4 space-y-2">
+                  {skillSubskills.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-2">
+                      No sub-skills defined
+                    </p>
+                  ) : (
+                    skillSubskills.map((subskill) => (
+                      <div 
+                        key={subskill.id}
+                        className="flex items-center justify-between p-3 rounded-lg bg-secondary/50"
+                      >
+                        <span className="text-sm text-foreground">{subskill.title}</span>
+                        <StatusBadge active={subskill.isactive} />
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          );
+        })}
+      </div>
+
+      <div className="border-t border-border">
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function Skills() {
   const { data: skills = [], isLoading: skillsLoading, error: skillsError } = useSkills();
   const { data: subskills = [], isLoading: subskillsLoading } = useSubskills();
@@ -126,89 +250,15 @@ export default function Skills() {
         {isLoading ? (
           <PageLoader message="Loading skills..." />
         ) : (
-          <div className="bg-card rounded-xl border border-border animate-fade-in">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 gap-4 border-b border-border">
-              <h3 className="text-lg font-semibold text-foreground">Skills & Sub-skills</h3>
-              <Button onClick={handleAdd}>
-                Add Skill
-              </Button>
-            </div>
-
-            {/* Skills List */}
-            <div className="divide-y divide-border">
-              {skills.map((skill) => {
-                const skillSubskills = getSubskillsForSkill(skill.id);
-                const isExpanded = expandedSkills.includes(skill.id);
-
-                return (
-                  <Collapsible 
-                    key={skill.id}
-                    open={isExpanded}
-                    onOpenChange={() => toggleExpanded(skill.id)}
-                  >
-                    <div className="p-4 hover:bg-secondary/30 transition-colors">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <CollapsibleTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <ChevronRight className={cn(
-                                "h-4 w-4 transition-transform",
-                                isExpanded && "rotate-90"
-                              )} />
-                            </Button>
-                          </CollapsibleTrigger>
-                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                            <Layers className="w-5 h-5 text-primary" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-foreground">{skill.title}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {skillSubskills.length} sub-skills
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <StatusBadge active={skill.isactive} />
-                          <Button variant="outline" size="sm" onClick={() => handleEdit(skill)}>
-                            Edit
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => handleDelete(skill)}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <CollapsibleContent>
-                      <div className="pl-16 pr-4 pb-4 space-y-2">
-                        {skillSubskills.length === 0 ? (
-                          <p className="text-sm text-muted-foreground py-2">
-                            No sub-skills defined
-                          </p>
-                        ) : (
-                          skillSubskills.map((subskill) => (
-                            <div 
-                              key={subskill.id}
-                              className="flex items-center justify-between p-3 rounded-lg bg-secondary/50"
-                            >
-                              <span className="text-sm text-foreground">{subskill.title}</span>
-                              <StatusBadge active={subskill.isactive} />
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                );
-              })}
-            </div>
-          </div>
+          <SkillsListWithPagination
+            skills={skills}
+            expandedSkills={expandedSkills}
+            toggleExpanded={toggleExpanded}
+            getSubskillsForSkill={getSubskillsForSkill}
+            onAdd={handleAdd}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         )}
       </div>
 
