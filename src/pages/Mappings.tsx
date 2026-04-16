@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PaginatedTable } from '@/components/ui/paginated-table';
-import { Skeleton } from '@/components/ui/skeleton';
+import { PageLoader } from '@/components/ui/page-loader';
 import { Plus, Trash2, Link2, Users, Cpu, Layers } from 'lucide-react';
 import { PaginationControls } from '@/components/ui/pagination-controls';
 import { usePagination } from '@/hooks/usePagination';
@@ -140,10 +140,7 @@ export default function Mappings() {
     return (
       <div className="space-y-6 p-6">
         <Header title="Mappings" subtitle="Manage relationships between technologies, skills, profiles, and users" />
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground">Loading mappings...</p>
-        </div>
+        <PageLoader message="Loading mappings..." />
       </div>
     );
   }

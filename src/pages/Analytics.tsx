@@ -6,7 +6,7 @@ import { StatCard } from '@/components/ui/stat-card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
+import { PageLoader } from '@/components/ui/page-loader';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
@@ -158,10 +158,7 @@ export default function Analytics() {
     return (
       <div className="space-y-6 p-6">
         <Header title="Skills Analytics" subtitle="Comprehensive analysis of employee skills and competency levels" />
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground">Loading analytics...</p>
-        </div>
+        <PageLoader message="Loading analytics..." />
       </div>
     );
   }
