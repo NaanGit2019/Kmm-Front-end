@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { PaginationControls } from '@/components/ui/pagination-controls';
+import { usePagination } from '@/hooks/usePagination';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -340,72 +342,103 @@ export default function Analytics() {
       </div>
 
       {/* Employee Leaderboard */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Employee Skills Leaderboard</CardTitle>
-          <CardDescription>Top performers based on skill assessments</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Rank</TableHead>
-                <TableHead>Employee</TableHead>
-                <TableHead>Profile</TableHead>
-                <TableHead>Skills Graded</TableHead>
-                <TableHead>Avg Grade</TableHead>
-                <TableHead>Top Skills</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {userSummaries
-                .sort((a, b) => parseFloat(b.avgGrade) - parseFloat(a.avgGrade))
-                .map((summary, index) => (
-                  <TableRow key={summary.user.id}>
-                    <TableCell>
-                      <Badge variant={index < 3 ? "default" : "outline"}>
-                        #{index + 1}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="text-xs bg-primary/10">
-                            {getInitials(summary.user.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{summary.user.name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {summary.user.department}
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {summary.profile && (
-                        <Badge variant="outline">{summary.profile.title}</Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>{summary.totalSkills}</TableCell>
-                    <TableCell>
-                      <Badge className="bg-primary">L{summary.avgGrade}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {summary.topSkills.slice(0, 2).map((skill, i) => (
-                          <Badge key={i} variant="secondary" className="text-xs">
-                            {skill}
-                          </Badge>
-                        ))}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <LeaderboardWithPagination userSummaries={userSummaries} getInitials={getInitials} />
     </div>
+  );
+}
+
+function LeaderboardWithPagination({ userSummaries, getInitials }: { userSummaries: any[]; getInitials: (name: string) => string }) {
+  const sorted = useMemo(() => 
+    [...userSummaries].sort((a, b) => parseFloat(b.avgGrade) - parseFloat(a.avgGrade)).map((s, i) => ({ ...s, _rank: i + 1, id: s.user.id })),
+    [userSummaries]
+  );
+
+  const {
+    paginatedData,
+    currentPage,
+    pageSize,
+    totalPages,
+    totalItems,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePagination(sorted);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Employee Skills Leaderboard</CardTitle>
+        <CardDescription>Top performers based on skill assessments</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Rank</TableHead>
+              <TableHead>Employee</TableHead>
+              <TableHead>Profile</TableHead>
+              <TableHead>Skills Graded</TableHead>
+              <TableHead>Avg Grade</TableHead>
+              <TableHead>Top Skills</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedData.map((summary) => (
+              <TableRow key={summary.user.id}>
+                <TableCell>
+                  <Badge variant={summary._rank <= 3 ? "default" : "outline"}>
+                    #{summary._rank}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="text-xs bg-primary/10">
+                        {getInitials(summary.user.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="font-medium">{summary.user.name}</div>
+                      <div className="text-xs text-muted-foreground">{summary.user.department}</div>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {summary.profile && <Badge variant="outline">{summary.profile.title}</Badge>}
+                </TableCell>
+                <TableCell>{summary.totalSkills}</TableCell>
+                <TableCell>
+                  <Badge className="bg-primary">L{summary.avgGrade}</Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {summary.topSkills.slice(0, 2).map((skill: string, i: number) => (
+                      <Badge key={i} variant="secondary" className="text-xs">{skill}</Badge>
+                    ))}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <div className="border-t border-border">
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            totalItems={totalItems}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
+        </div>
+      </CardContent>
+    </Card>
   );
 }
